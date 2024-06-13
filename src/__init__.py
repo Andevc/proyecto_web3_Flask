@@ -2,7 +2,7 @@ from flask import Flask
 
 # Routes
 from src import index
-from src.routes import collection_rout, products, user, auth
+from src.routes import products, user, auth
 
 app = Flask(__name__)
 
@@ -15,6 +15,5 @@ def init_app(config):
     app.register_blueprint(auth.auth_bp, url_prefix='/api/auth')
     app.register_blueprint(user.user_bp, url_prefix='/api/users')
     app.register_blueprint(products.product_bp, url_prefix='/api/products')
-    #app.register_blueprint(collection.collection_bp, url_prefix='/api/collection')
-
+    
     return app

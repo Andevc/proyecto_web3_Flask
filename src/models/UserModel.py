@@ -1,5 +1,6 @@
 from src.database.db_mysql import DataBase
 from werkzeug.security import generate_password_hash, check_password_hash
+
 class User:
  
     def __init__(self, user_id, username, password, email, fullname) -> None:
@@ -9,9 +10,35 @@ class User:
         self.email = email
         self.fullname = fullname
 
+    # Operaciones CRUD
+
+    @staticmethod
+    def Create(user):
+        db = DataBase()
+        hashed_password = generate_password_hash(user.password)
+        query = 'INSERT INTO `user`(`user_id`, `username`, `password`, `email`, `fullname`) VALUES (%s ,%s ,%s ,%s ,%s )'
+        db.execute(query, (user.user_id, user.username, hashed_password, user.email, user.fullname))
+        db.close()
+    
+    @staticmethod
+    def Update(user):
+        db = DataBase()
+        query = 'UPDATE `user` SET `username`=%s, `password`=%s, `email`=%s, `fullname`=%s  WHERE `user_id`=%s '
+        hashed_password = generate_password_hash(user.password)
+        db.execute(query, (user.username, hashed_password, user.email, user.fullname, user.user_id))
+        db.close()
+        
+    @staticmethod
+    def Delete(user_id):
+        db = DataBase()
+        query = 'DELETE FROM `user` WHERE `user_id`=%s'
+        db.execute(query, (user_id))
+        db.close
+
+    # Otros Metodos 
+
     @staticmethod
     def from_dict(data):
-        print(str(data))
         return User(
             data['user_id'],
             data['username'],
@@ -49,28 +76,6 @@ class User:
         return User.from_dict(res) if res else None
 
     @staticmethod
-    def Create(user):
-        db = DataBase()
-        #hashed_password = generate_password_hash(user.password, method='sha256')
-        query = 'INSERT INTO `user`(`user_id`, `username`, `password`, `email`, `fullname`) VALUES (%s ,%s ,%s ,%s ,%s )'
-        db.execute(query, (user.user_id, user.username, user.password, user.email, user.fullname))
-        db.close()
-    
-    @staticmethod
-    def Update(user):
-        db = DataBase()
-        query = 'UPDATE `user` SET `username`=%s, `password`=%s, `email`=%s, `fullname`=%s  WHERE `user_id`=%s '
-        db.execute(query, (user.username, user.password, user.email, user.fullname, user.user_id))
-        db.close()
-        
-    @staticmethod
-    def Delete(user_id):
-        db = DataBase()
-        query = 'DELETE FROM `user` WHERE `user_id`=%s'
-        db.execute(query, (user_id))
-        db.close
-
-    @staticmethod
     def get_by_username(username):
         db = DataBase()
         query = 'SELECT * FROM `user` WHERE username = %s'
@@ -85,10 +90,12 @@ class User:
         query = 'SELECT * FROM `user` WHERE email = %s'
         db.execute(query, (email,))
         res = db.fetchone()
-        db.close()
+        db.close()        
+        
         return User.from_dict(res) if res else None
-    
 
     @staticmethod
-    def check_password(stored_password, provided_password):
-        return stored_password == provided_password
+    def check_password(hash_passwors, password):
+        return check_password_hash(hash_passwors, password)
+
+    

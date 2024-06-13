@@ -1,7 +1,6 @@
 from flask import jsonify, request
 from src.models.UserModel import User
 
-
 def get_all_users():
     users = [User.to_dict(user) for user in User.get_All()]
     return jsonify(users), 200
@@ -9,8 +8,8 @@ def get_all_users():
 def get_user(user_id):
     user = User.to_dict(User.get_by_Id(user_id))
     if user:
-        return jsonify(user), 200
-    return jsonify({'message' : 'User not fund'}), 404
+        return jsonify(user), 200 
+    return jsonify({'message' : 'User not found'}), 404
 
 def update_user(user_id):
     data = request.get_json()
