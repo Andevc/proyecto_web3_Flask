@@ -1,6 +1,9 @@
 from flask import jsonify, request
 from src.models.ProductModel import Product
 from src.models.CollectionModel import Collection
+from src.database.db_mysql import DataBase
+from src.utils.generate_id import generate_id
+
 
 def get_all_products():
     products = [Product.to_dict(prod) for prod in Product.get_All()]
@@ -15,22 +18,34 @@ def get_product(product_id):
 
 
 def create_product_for_user(user_id):
+    db = DataBase()
     try:
         data = request.get_json()
 
+        if data['product_id'] == "":
+            data['product_id'] = generate_id()
+            print(data['product_id'])
+
         new_product = Product.from_dict(data)
+
         exist_product = Product.get_by_Id(new_product.product_id)
         if exist_product:
             return jsonify({'message' : 'Product already exist.'}), 400
         
+        db.conecction.begin()
         Product.Create(new_product)
         print(user_id, new_product.product_id)
+
         Collection.add_product_to_user_collection(user_id, new_product.product_id)
+        db.conecction.commit()
 
         return jsonify({'message' : 'Product created successfully', 'product': Product.to_dict(new_product)}), 200
     
     except Exception as e:
+        db.conecction.rollback()
         return jsonify({'message': str(e)}), 500
+    finally:
+        db.close()
 
 def update_product(product_id):
     Product.Update(product_id)

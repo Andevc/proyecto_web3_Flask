@@ -1,9 +1,9 @@
 from src.database.db_mysql import DataBase
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from src.utils.generate_id import generate_id
 class User:
  
-    def __init__(self, user_id, username, password, email, fullname) -> None:
+    def __init__(self, user_id,username, password, email, fullname) -> None:
         self.user_id = user_id
         self.username = username
         self.password = password
@@ -15,9 +15,10 @@ class User:
     @staticmethod
     def Create(user):
         db = DataBase()
+        gen_id = str(generate_id())
         hashed_password = generate_password_hash(user.password)
         query = 'INSERT INTO `user`(`user_id`, `username`, `password`, `email`, `fullname`) VALUES (%s ,%s ,%s ,%s ,%s )'
-        db.execute(query, (user.user_id, user.username, hashed_password, user.email, user.fullname))
+        db.execute(query, (gen_id, user.username, hashed_password, user.email, user.fullname))
         db.close()
     
     @staticmethod

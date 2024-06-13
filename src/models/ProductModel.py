@@ -1,5 +1,5 @@
 from src.database.db_mysql import DataBase
-
+from src.utils.generate_id import generate_id
 class Product:
 
     def __init__(self, product_id, product_name, description, price, image_url) -> None:
