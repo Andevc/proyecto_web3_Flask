@@ -9,6 +9,7 @@ class DataBase():
             user = config('MYSQL_USER'),
             passwd = config('MYSQL_PASSWORD'),
             database = config('MYSQL_DB'),
+            port = int(config('MYSQL_PORT')),
             cursorclass = pymysql.cursors.DictCursor
         )
         self.cursor = self.conecction.cursor()

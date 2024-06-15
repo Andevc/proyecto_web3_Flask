@@ -12,8 +12,8 @@ def init_app(config):
 
     # Blueprints
     app.register_blueprint(index.index_bp, url_prefix='/')
-    app.register_blueprint(auth.auth_bp, url_prefix='/api/auth')
-    app.register_blueprint(user.user_bp, url_prefix='/api/users')
-    app.register_blueprint(products.product_bp, url_prefix='/api/products')
+    app.register_blueprint(auth.auth_bp, url_prefix='/auth')
+    app.register_blueprint(user.user_bp, url_prefix='/users')
+    app.register_blueprint(products.product_bp, url_prefix='/products')
     
     return app

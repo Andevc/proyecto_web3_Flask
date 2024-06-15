@@ -1,0 +1,57 @@
+---
+import "@styles/AuthStyle.css"
+---
+
+<section class="h-full w-full login wrap">
+    <h1 class="txt-title">Login</h1>
+    <form id="loginForm" >
+        <input placeholder="Email" id="email" name="email" type="text" />
+        <input
+            placeholder="Password"
+            id="password"
+            name="password"
+            type="password"
+        />
+        <input value="Login" class="btn" type="submit" />
+    </form>
+</section>
+
+<script is:inline >
+
+    document.getElementById('loginForm').addEventListener('submit', async function(event){
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData();
+
+        const data = {};
+        formData.forEach((key, value) => {
+            data[key] = value;
+
+        })
+
+        try{
+            const response = await fetch('http://127.0.0.1:5000/api/auth/login/',{
+                method: 'POST',
+                headers: { 'Content-Type' : 'applicaction/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            console.log(result)
+
+            if (result.ok){
+                console.log('Login Succesfully')
+            }
+            else{
+                console.log('Login Failed')
+            }
+        }catch(error){
+            console.log('Error: ', error)
+        }
+    })
+
+</script>
+
+
+

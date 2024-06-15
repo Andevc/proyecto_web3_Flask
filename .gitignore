@@ -1,5 +1,10 @@
 .venv/
 
+img/
+
+.env
+
+urls.txt
 __pycache__
 
 *.py[cod]
