@@ -7,6 +7,8 @@ from src.models.CollectionModel import Collection
 from src.services.cloudinary_service import get_url_from_cloudinary
 from src.utils.generate_id import generate_id
 
+from werkzeug.utils import secure_filename
+
 def get_all_products():
     products = [Product.to_dict(prod) for prod in Product.get_All()]
     return jsonify(products), 200
@@ -23,31 +25,41 @@ def create_product_for_user(user_id):
     db = DataBase()
     try:
 
-        #data = request.form
-        # image_file = data.files['image']
-        # image_name = data.files['image_tittle']
-        # url_image = get_url_from_cloudinary(image_file, image_name)
+        if 'productImage' not in request.files:
+            return jsonify({'message': 'No se proporcionó ninguna imagen'}), 400
 
-        # if not url_image:
-        #     return jsonify({'message' : 'Error to upload file'}), 500
+        image_file = request.files['productImage']
+        image_title = request.form.get('productName')
+        
+        image_name = secure_filename(image_title)
+        url_image = get_url_from_cloudinary(image_file, image_name)
 
-        # new_product = Product( 
-        #     product_id=generate_id(), 
-        #     product_name=data['name'], 
-        #     description=data['description'], 
-        #     price=data['price'], 
-        #     image_url=url_image
-        # )
+        if not url_image:
+            return jsonify({'message': 'Error al subir el archivo'}), 500
+
+        product_id = generate_id()
+        product_name = request.form.get('productName')
+        description = request.form.get('productDescription')
+        price = request.form.get('productPrice')
+
+        new_product = Product(
+            product_id=product_id,
+            product_name=product_name,
+            description=description,
+            price=price,
+            image_url=url_image
+        )
+
+        exist_product = Product.get_by_Id(new_product.product_id)
         
         #-------------------------------------------------
-        data = request.get_json()
+        # data = request.get_json()
 
-        if data['product_id'] == "":
-            data['product_id'] = generate_id()
-            print(data['product_id'])
-        #-------------------------------------------------
-
-        new_product = Product.from_dict(data)
+        # if data['product_id'] == "":
+        #     data['product_id'] = generate_id()
+        #     print(data['product_id'])
+        # new_product = Product.from_dict(data)
+        #-------------------------------------------------        
 
         exist_product = Product.get_by_Id(new_product.product_id)
 
@@ -73,11 +85,6 @@ def create_product_for_user(user_id):
         db.close()
 
 
-        if data['product_id'] == "":
-            data['product_id'] = generate_id()
-            print(data['product_id'])
-
-        new_product = Product.from_dict(data)
 
 
 def update_product(product_id):
