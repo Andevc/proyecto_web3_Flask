@@ -32,7 +32,7 @@ def create_product_for_user(user_id):
         image_title = request.form.get('productName')
         
         image_name = secure_filename(image_title)
-        url_image = get_url_from_cloudinary(image_file, image_name)
+        url_image = get_url_from_cloudinary(image_file, image_name) # funcion de services para obtener la url de una imagen
 
         if not url_image:
             return jsonify({'message': 'Error al subir el archivo'}), 500
